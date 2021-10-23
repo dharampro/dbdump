@@ -13,7 +13,7 @@
 	<artifactId>dbdump</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>dbdump</name>
-	<description>menrem app user management</description>
+	<description>Tool to create dump of database in csv,flatfiles or to another database</description>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
