@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.techendear.api.constant.ErrorMessage;
 import com.techendear.api.entity.User;
+import com.techendear.api.exception.InvaliedRequestException;
 import com.techendear.api.service.UserService;
 
 @RestController
@@ -25,7 +27,8 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
-	return ResponseEntity.ok(Optional.ofNullable(this.userService.createUser(user)).orElseThrow());
+	return ResponseEntity.ok(Optional.ofNullable(this.userService.createUser(user))
+		.orElseThrow(() -> new InvaliedRequestException(ErrorMessage.INVALID_REQUEST.value())));
     }
 
     @GetMapping("/{contactNumber}")

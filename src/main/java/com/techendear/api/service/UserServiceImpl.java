@@ -3,14 +3,20 @@ package com.techendear.api.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.techendear.api.constant.ErrorMessage;
 import com.techendear.api.entity.User;
+import com.techendear.api.exception.ConflictException;
 import com.techendear.api.repository.UserRepository;
+import com.techendear.api.util.UserDtoMapUtil;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserDtoMapUtil userDtoMapUtil;
 
     @Override
     public User createUser(User user) {
@@ -26,14 +32,16 @@ public class UserServiceImpl implements UserService {
     public User updateUserByContactNumber(User user, String contactNumber) {
 	User userDb = this.userRepository.findByContactNumber(contactNumber);
 	if (userDb == null) {
+	    user.setContactNumber(contactNumber);
 	    return this.userRepository.save(user);
 	} else {
-	    userDb.setId(user.getId());
-	    userDb.setFirstName(user.getFirstName());
-	    userDb.setLasteName(user.getLasteName());
-	    userDb.setEmail(user.getEmail());
-	    userDb.setContactNumber(user.getContactNumber());
-	    return this.userRepository.save(userDb);
+	    user.setId(userDb.getId());
+	    user.setContactNumber(userDb.getContactNumber());
+	    if (userDb.equals(user)) {
+		throw new ConflictException(ErrorMessage.ACCOUNT_EXISTS.value());
+	    } else {
+		return this.userRepository.save(this.userDtoMapUtil.updateUserMap(user, userDb));
+	    }
 	}
     }
 
